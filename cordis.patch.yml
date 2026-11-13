@@ -11,7 +11,7 @@
 
 - insert:
     - id: dsh-model-fallback
-      name: dsh-model-fallback
+      name: '@wuzhengmao/dsh-model-fallback'
       config:
         enabled: true
         primaryProvider: ""
