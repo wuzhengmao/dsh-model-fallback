@@ -1,6 +1,6 @@
 {
   "name": "@wuzhengmao/dsh-model-fallback",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "DSH 模型自动降级插件：首选模型超时/失败/低速率时切换到备用模型，到期自动切回并与对话框模型显示同步",
   "keywords": [
     "deepseek-harness",
