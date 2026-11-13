@@ -4,15 +4,27 @@ DSH 模型自动降级插件：首选模型**超时无响应**、**连接失败*
 
 ## 安装
 
-### 方式一：DSH 插件面板（推荐）
+### 方式一：npm 包名安装（推荐，支持一键更新）
 
-DSH 的插件安装器（`installBundle`）原生支持 git 仓库地址直装。在 DeepSeek Harness 中打开左侧「全局面板」→「插件」，在插件安装入口填入本仓库地址：
+在 DeepSeek Harness 中打开左侧「全局面板」→「插件」，在插件安装入口填入包名：
+
+```
+@wuzhengmao/dsh-model-fallback
+```
+
+从 npm 安装的插件会被 DSH 识别为「按包名从 registry 安装」，插件详情页会出现**「更新」按钮**，之后新版本可一键升级。
+
+### 方式二：git 地址直装
+
+DSH 的插件安装器（`installBundle`）原生支持 git 仓库地址直装，填入本仓库地址：
 
 ```
 https://github.com/wuzhengmao/dsh-model-fallback.git
 ```
 
-### 方式二：本地目录安装（最通用可靠）
+> 注意：从 git 地址安装的插件**不会出现「更新」按钮**——DSH 的更新功能只对 registry 按包名安装的插件开放。需要更新时请卸载后重新安装，或改用上面的 npm 包名安装。
+
+### 方式三：本地目录安装
 
 如果插件面板没有「从地址安装」的输入框，先把仓库克隆到本地，再让 DSH 安装这个本地目录：
 
@@ -22,7 +34,13 @@ git clone https://github.com/wuzhengmao/dsh-model-fallback.git
 
 然后在 DSH 插件面板选择「本地文件 / 从本地目录安装」，指向克隆出来的 `dsh-model-fallback` 目录。
 
-### 方式三：CLI（非桌面版 profile）
+### 方式四：CLI（非桌面版 profile）
+
+```bash
+dsh plugin --profile <你的 profile 名> add @wuzhengmao/dsh-model-fallback
+```
+
+或 git 地址：
 
 ```bash
 dsh plugin --profile <你的 profile 名> add https://github.com/wuzhengmao/dsh-model-fallback.git
