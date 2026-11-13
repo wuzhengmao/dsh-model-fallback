@@ -432,5 +432,36 @@ function check(name, cond, extra = "") {
   check("降级写入了 fallback 模型", agent.selections.at(-1)?.model === "deepseek-flash");
 }
 
+// --- 用例 18：切回目标是「降级前用户实际在用的模型」，不是拦截列表的第一个 ---
+{
+  console.log("\n用例 18：切回还原降级前的模型");
+  const { ctx, state } = makeCtx();
+  const agent = fakeAgent("s18");
+  state.agents.set("s18", agent);
+  apply(ctx, {
+    ...baseConfig,
+    primaryModels: ["primary-model", "primary-model-mini"],
+    timeoutMs: 50, windowMs: 100000, minTokensPerSecond: 1, switchBackAfterMs: 120
+  });
+  state.nextImpl = () => fakeStream(textChunks(2), { delayBeforeFirst: 300 });
+  state.impl = () => fakeStream(textChunks(2));
+  const request = () => ({
+    provider: "vendor-a", model: "primary-model-mini", sessionId: "s18", messages: []
+  });
+  // 用户在拦截列表里的第二个模型上发起请求
+  await runRequest(state, request());
+  check("已降级", state.calls.length === 1, JSON.stringify(state.calls));
+  check("降级写入 fallback", agent.selections.at(-1)?.model === "deepseek-flash", JSON.stringify(agent.selections));
+  await sleep(200);
+  state.nextImpl = () => fakeStream(textChunks(2));
+  await runRequest(state, request());
+  const last = agent.selections.at(-1);
+  check(
+    "切回写回降级前的 primary-model-mini，而不是列表第一个 primary-model",
+    last?.model === "primary-model-mini",
+    JSON.stringify(agent.selections)
+  );
+}
+
 console.log(failed === 0 ? "\n全部通过" : `\n${failed} 项失败`);
 process.exit(failed === 0 ? 0 : 1);
