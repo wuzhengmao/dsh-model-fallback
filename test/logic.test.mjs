@@ -392,5 +392,45 @@ function check(name, cond, extra = "") {
   check("两次降级都写入了 fallback", agent.selections.filter((x) => x.model === "deepseek-flash").length === 2);
 }
 
+// --- 用例 17：配置为空启动，之后补全配置应自动开始工作（不依赖重新 apply）---
+{
+  console.log("\n用例 17：空配置启动后补全配置自动生效");
+  const { ctx, state } = makeCtx();
+  // 模拟 Host 传入的配置对象：settings 保存时只就地更新它，不会重新执行 apply。
+  const liveConfig = {
+    enabled: true,
+    primaryProvider: "",
+    primaryModels: [],
+    fallbackProvider: "",
+    fallbackModel: "",
+    timeoutMs: 60,
+    windowMs: 200,
+    minTokensPerSecond: 10000,
+    switchBackAfterMs: 60000,
+    asciiTokenPerChar: 0.3,
+    cjkTokenPerChar: 0.6
+  };
+  apply(ctx, liveConfig);
+  check("配置为空时仍然注册了 llm/stream 监听器", typeof state.handler === "function");
+
+  state.nextImpl = () => fakeStream(textChunks(2), { delayBeforeFirst: 400 });
+  state.impl = () => fakeStream(textChunks(1));
+  const outEmpty = await runRequest(state, { ...req(), sessionId: "s17" });
+  check("配置为空时请求原样放行", state.calls.length === 0, JSON.stringify(state.calls));
+  check("配置为空时输出完整", outEmpty.filter((c) => c.type === "text-delta").length === 2);
+
+  // 用户在设置页把四项补全：config 对象被就地更新，apply 不会重跑。
+  liveConfig.primaryProvider = "vendor-a";
+  liveConfig.primaryModels = ["primary-model"];
+  liveConfig.fallbackProvider = "deepseek-official";
+  liveConfig.fallbackModel = "deepseek-flash";
+
+  const agent = fakeAgent("s17");
+  state.agents.set("s17", agent);
+  await runRequest(state, { ...req(), sessionId: "s17" });
+  check("补全配置后同一实例立即接管并降级", state.calls.length === 1, JSON.stringify(state.calls));
+  check("降级写入了 fallback 模型", agent.selections.at(-1)?.model === "deepseek-flash");
+}
+
 console.log(failed === 0 ? "\n全部通过" : `\n${failed} 项失败`);
 process.exit(failed === 0 ? 0 : 1);

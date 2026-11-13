@@ -66,13 +66,13 @@ dsh plugin --profile <你的 profile 名> add https://github.com/wuzhengmao/dsh-
 | `windowMs` | `30000`（设置页显示 30 秒） | 低速率统计窗口 |
 | `minTokensPerSecond` | `30` | 低速率阈值 token/s |
 | `switchBackAfterMs` | `600000`（设置页显示 600 秒） | 降级持续多久后切回，0 表示不自动切回 |
-
-> 设置页里三个时间字段按**秒**填写；配置文件里 `timeoutMs` / `windowMs` / `switchBackAfterMs` 仍以**毫秒**存储（历史字段名，保证已有配置不失效）。
-
-> **配置不完整视为未启用**：`primaryProvider` / `primaryModels` / `fallbackProvider` / `fallbackModel` 任一为空（或列表为空）时，插件等同于未启用，所有请求原样放行。
 | `asciiTokenPerChar` | `0.3` | 速率估算系数 |
 | `cjkTokenPerChar` | `0.6` | 速率估算系数 |
 | `logFile` | `""` | 日志文件绝对路径；留空只写宿主日志与控制台 |
+
+> 设置页里三个时间字段按**秒**填写；配置文件里 `timeoutMs` / `windowMs` / `switchBackAfterMs` 仍以**毫秒**存储（历史字段名，保证已有配置不失效）。
+
+> **配置不完整视为未启用**：`primaryProvider` / `primaryModels` / `fallbackProvider` / `fallbackModel` 任一为空（或列表为空）时，插件等同于未启用，所有请求原样放行。补全配置后**自动开始工作，无需重启 DSH、也无需重新安装插件**——插件在执行链路里实时读取配置，配置补全后的第一个请求就会开始接管。
 
 ## 配置方式
 
