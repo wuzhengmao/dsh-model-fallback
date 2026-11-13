@@ -1,0 +1,57 @@
+{
+  "name": "dsh-model-fallback",
+  "version": "0.6.1",
+  "description": "DSH 模型自动降级插件：首选模型超时/失败/低速率时切换到备用模型，到期自动切回并与对话框模型显示同步",
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "model",
+    "fallback",
+    "failover"
+  ],
+  "packageManager": "pnpm@9.15.9",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-api-remotes",
+        "@deepseek-ai/dsh-client-connection",
+        "@deepseek-ai/dsh-client-ui-settings"
+      ]
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": ">=4.0.0",
+    "@deepseek-ai/dsh": "^0.2.0-rc.2",
+    "@deepseek-ai/dsh-typert-protocol": ">=0.1.0-rc.6 <0.3.0",
+    "@deepseek-ai/schemastery": ">=3.18.0"
+  },
+  "dependencies": {},
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wuzhengmao/dsh-model-fallback.git"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=26.3.1"
+  }
+}
